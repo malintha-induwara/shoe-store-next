@@ -1,31 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, Pencil, Trash2, UserPlus, Search } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import { CustomerModal } from "./customer-modal";
-import { createCustomer, updateCustomer, deleteCustomer } from "@/app/lib/customer-actions";
+import { updateCustomer, deleteCustomer } from "@/app/lib/customer/customer-actions";
 import { Customer, CustomerFormData } from "@/app/lib/types";
 
 export default function CustomerTable({ customers }: { customers: Customer[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"view" | "edit" | "add">("view");
+  const [modalMode, setModalMode] = useState<"view" | "edit">("view");
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
-  const pathname = usePathname();
-  const { replace } = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleAction = (action: "view" | "edit" | "add", customer?: Customer) => {
+  const handleAction = (action: "view" | "edit", customer?: Customer) => {
     setModalMode(action);
     setSelectedCustomer(customer || null);
     setIsModalOpen(true);
   };
 
   const handleSubmit = async (formData: CustomerFormData) => {
-    if (modalMode === "add") {
-      await createCustomer(formData);
-    } else if (modalMode === "edit" && selectedCustomer) {
+    if (modalMode === "edit" && selectedCustomer) {
       await updateCustomer(selectedCustomer.id, formData);
     }
     setIsModalOpen(false);
@@ -37,26 +30,6 @@ export default function CustomerTable({ customers }: { customers: Customer[] }) 
 
   return (
     <>
-      <div className="mb-6 bg-white p-4 rounded-lg shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search customers..."
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            onChange={(e) => {
-              const params = new URLSearchParams(searchParams);
-              params.set("query", e.target.value);
-              replace(`${pathname}?${params.toString()}`);
-            }}
-            defaultValue={searchParams.get("query")?.toString()}
-          />
-        </div>
-        <button onClick={() => handleAction("add")} className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors max-w-md">
-          <UserPlus className="h-5 w-5 mr-2" />
-          Add Customer
-        </button>
-      </div>
       <div className="bg-white mb-8 rounded-lg shadow-sm overflow-hidden border border-gray-300">
         <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-295px)]">
           <table className="min-w-full divide-y divide-gray-200 relative">
