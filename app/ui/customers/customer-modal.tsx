@@ -2,14 +2,14 @@
 
 import { FormEvent, useEffect, useRef } from "react";
 import { X, Phone, Mail, MapPin, User } from "lucide-react";
-import { Customer, CustomerFormData } from "@/app/lib/types";
+import { Customer} from "@/app/lib/types";
 
 interface CustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "view" | "edit" | "add";
   initialData?: Customer;
-  onSubmit: (data: CustomerFormData) => void;
+  onSubmit: (data: FormData) => void;
 }
 
 export function CustomerModal({
@@ -39,14 +39,8 @@ export function CustomerModal({
     if (!formRef.current) return;
 
     const formData = new FormData(formRef.current);
-    const customerData: CustomerFormData = {
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      mobile: formData.get('mobile') as string,
-      address: formData.get('address') as string,
-    };
-
-    onSubmit(customerData);
+  
+    onSubmit(formData);
   };
 
   const getModalTitle = () => {
@@ -58,7 +52,6 @@ export function CustomerModal({
   };
 
   return (
-    <>
       <dialog
         ref={dialogRef}
         className="bg-white rounded-lg shadow-xl w-full max-w-md fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop:bg-gray-800/70"
@@ -160,6 +153,5 @@ export function CustomerModal({
           </form>
         </div>
       </dialog>
-    </>
   );
 }

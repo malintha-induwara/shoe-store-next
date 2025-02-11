@@ -2,7 +2,6 @@
 import { UserPlus } from "lucide-react";
 import { CustomerModal } from "./customer-modal";
 import { useState } from "react";
-import { CustomerFormData } from "@/app/lib/types";
 import { createCustomer } from "@/app/lib/customer/customer-actions";
 
 export default function CreateCustomer() {
@@ -12,7 +11,7 @@ export default function CreateCustomer() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (formData: CustomerFormData) => {
+  const handleSubmit = async (formData: FormData) => {
     await createCustomer(formData);
     setIsModalOpen(false);
   };

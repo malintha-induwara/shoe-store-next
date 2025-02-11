@@ -2,32 +2,40 @@
 
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
-import { CustomerFormData } from "../types";
 
-export async function createCustomer(formData: CustomerFormData) {
+export async function createCustomer(formData: FormData) {
   try {
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const mobile = formData.get("mobile") as string;
+    const address = formData.get("address") as string;
+
     await sql`
       INSERT INTO customers (name, email, mobile, address, password)
-      VALUES (${formData.name}, ${formData.email}, ${formData.mobile}, ${formData.address}, ${formData.address})
+      VALUES (${name}, ${email}, ${mobile}, ${address}, ${address})
     `;
-    revalidatePath("/dashboard/customers");
+    revalidatePath("/dashboard/customer");
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to create customer.");
   }
 }
 
-export async function updateCustomer(id: string, formData: CustomerFormData) {
+export async function updateCustomer(id: string, formData: FormData) {
   try {
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const mobile = formData.get("mobile") as string;
+    const address = formData.get("address") as string;
     await sql`
       UPDATE customers
-      SET name = ${formData.name},
-          email = ${formData.email},
-          mobile = ${formData.mobile},
-          address = ${formData.address}
+      SET name = ${name},
+          email = ${email},
+          mobile = ${mobile},
+          address = ${address}
       WHERE id = ${id}
     `;
-    revalidatePath("/dashboard/customers");
+    revalidatePath("/dashboard/customer");
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to update customer.");
@@ -36,5 +44,5 @@ export async function updateCustomer(id: string, formData: CustomerFormData) {
 
 export async function deleteCustomer(id: string) {
   await sql`DELETE FROM customers WHERE id = ${id}`;
-  revalidatePath("/dashboard/customers");
+  revalidatePath("/dashboard/customer");
 }

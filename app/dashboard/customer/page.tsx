@@ -3,7 +3,7 @@ import { fetchCustomerPages, fetchFilteredCustomers } from "@/app/lib/customer/c
 import CustomerTable from "@/app/ui/customers/table";
 import Pagination from "@/app/ui/pagination";
 import { Metadata } from "next";
-import { SearchCustomers } from "@/app/ui/customers/search";
+import  SearchBar  from "@/app/ui/search";
 import CreateCustomer from "@/app/ui/customers/create-form";
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default async function Page(props: {
         <h1 className="text-2xl font-semibold text-gray-900">Customer Management</h1>
       </div>
       <div className="mb-6 bg-white p-4 rounded-lg shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-        <SearchCustomers />
+        <SearchBar placeholder="Search customers... " />
         <CreateCustomer />
       </div>
       <Suspense fallback={<div>Loading...</div>}>

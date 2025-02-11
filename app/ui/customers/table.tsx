@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { CustomerModal } from "./customer-modal";
 import { updateCustomer, deleteCustomer } from "@/app/lib/customer/customer-actions";
-import { Customer, CustomerFormData } from "@/app/lib/types";
+import { Customer } from "@/app/lib/types";
 
 export default function CustomerTable({ customers }: { customers: Customer[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function CustomerTable({ customers }: { customers: Customer[] }) 
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (formData: CustomerFormData) => {
+  const handleSubmit = async (formData: FormData) => {
     if (modalMode === "edit" && selectedCustomer) {
       await updateCustomer(selectedCustomer.id, formData);
     }
