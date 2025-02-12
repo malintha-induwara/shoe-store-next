@@ -4,11 +4,13 @@ import { useState } from "react";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { CustomerModal } from "./customer-modal";
 import { updateCustomer, deleteCustomer } from "@/app/lib/customer/customer-actions";
-import { Customer } from "@/app/lib/types";
+import { Customer, State } from "@/app/lib/types";
 
 export default function CustomerTable({ customers }: { customers: Customer[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
+  const initialState: State = { message: null, errors: {} };
+  const [errorState, setErrorState] = useState<State>(initialState);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   const handleAction = (action: "view" | "edit", customer?: Customer) => {
@@ -19,9 +21,17 @@ export default function CustomerTable({ customers }: { customers: Customer[] }) 
 
   const handleSubmit = async (formData: FormData) => {
     if (modalMode === "edit" && selectedCustomer) {
-      await updateCustomer(selectedCustomer.id, formData);
+      const response = await updateCustomer(selectedCustomer.id, formData);
+      if (response.success) {
+        setIsModalOpen(false);
+        setErrorState(initialState);
+      } else {
+        setErrorState({
+          message: response.message,
+          errors: response.errors,
+        });
+      }
     }
-    setIsModalOpen(false);
   };
 
   async function handleRemove(id: string) {
@@ -74,7 +84,17 @@ export default function CustomerTable({ customers }: { customers: Customer[] }) 
           </table>
         </div>
       </div>
-      <CustomerModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} mode={modalMode} initialData={selectedCustomer || undefined} onSubmit={handleSubmit} />
+      <CustomerModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setErrorState(initialState);
+          setIsModalOpen(false);
+        }}
+        mode={modalMode}
+        errorState={errorState}
+        initialData={selectedCustomer || undefined}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 }

@@ -3,17 +3,28 @@ import { UserPlus } from "lucide-react";
 import { CustomerModal } from "./customer-modal";
 import { useState } from "react";
 import { createCustomer } from "@/app/lib/customer/customer-actions";
+import { State } from "@/app/lib/types";
 
 export default function CreateCustomer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const initialState: State = { message: null, errors: {} };
+  const [errorState, setErrorState] = useState<State>(initialState);
 
   const handleAction = () => {
     setIsModalOpen(true);
   };
 
   const handleSubmit = async (formData: FormData) => {
-    await createCustomer(formData);
-    setIsModalOpen(false);
+    const response = await createCustomer(formData);
+    if (response.success) {
+      setErrorState(initialState);
+      setIsModalOpen(false);
+    } else {
+      setErrorState({
+        message: response.message,
+        errors: response.errors,
+      });
+    }
   };
 
   return (
@@ -22,7 +33,17 @@ export default function CreateCustomer() {
         <UserPlus className="h-5 w-5 mr-2" />
         Add Customer
       </button>
-      <CustomerModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} mode="add" initialData={undefined} onSubmit={handleSubmit} />
+      <CustomerModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setErrorState(initialState);
+          setIsModalOpen(false);
+        }}
+        mode="add"
+        errorState={errorState}
+        initialData={undefined}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 }
