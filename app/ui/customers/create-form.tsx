@@ -3,12 +3,12 @@ import { UserPlus } from "lucide-react";
 import { CustomerModal } from "./customer-modal";
 import { useState } from "react";
 import { createCustomer } from "@/app/lib/customer/customer-actions";
-import { State } from "@/app/lib/types";
+import { CustomerState } from "@/app/lib/types";
 
 export default function CreateCustomer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const initialState: State = { message: null, errors: {} };
-  const [errorState, setErrorState] = useState<State>(initialState);
+  const initialState: CustomerState = { message: null, errors: {} };
+  const [errorState, setErrorState] = useState<CustomerState>(initialState);
 
   const handleAction = () => {
     setIsModalOpen(true);

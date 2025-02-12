@@ -4,13 +4,13 @@ import { useState } from "react";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { CustomerModal } from "./customer-modal";
 import { updateCustomer, deleteCustomer } from "@/app/lib/customer/customer-actions";
-import { Customer, State } from "@/app/lib/types";
+import { Customer, CustomerState } from "@/app/lib/types";
 
 export default function CustomerTable({ customers }: { customers: Customer[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
-  const initialState: State = { message: null, errors: {} };
-  const [errorState, setErrorState] = useState<State>(initialState);
+  const initialState: CustomerState = { message: null, errors: {} };
+  const [errorState, setErrorState] = useState<CustomerState>(initialState);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   const handleAction = (action: "view" | "edit", customer?: Customer) => {

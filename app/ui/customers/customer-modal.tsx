@@ -2,14 +2,13 @@
 
 import { FormEvent, useEffect, useRef } from "react";
 import { X, Phone, Mail, MapPin, User } from "lucide-react";
-import { Customer, State } from "@/app/lib/types";
-
+import { Customer, CustomerState } from "@/app/lib/types";
 
 interface CustomerModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "view" | "edit" | "add";
-  errorState: State;
+  errorState: CustomerState;
   initialData?: Customer;
   onSubmit: (data: FormData) => void;
 }
