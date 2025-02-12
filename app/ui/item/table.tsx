@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteItem, updateItem } from "@/app/lib/item/item-actions";
-import { Item} from "@/app/lib/types";
+import { Item, ItemState } from "@/app/lib/types";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
@@ -10,6 +10,8 @@ import { ItemModal } from "./item-modal";
 export default function ItemTable({ items }: { items: Item[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"view" | "edit">("view");
+  const initialState: ItemState = { message: null, errors: {} };
+  const [errorState, setErrorState] = useState<ItemState>(initialState);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 
   const handleAction = (action: "view" | "edit", item?: Item) => {
@@ -20,9 +22,17 @@ export default function ItemTable({ items }: { items: Item[] }) {
 
   const handleSubmit = async (formData: FormData) => {
     if (modalMode === "edit" && selectedItem) {
-      await updateItem(selectedItem.id, formData);
+      const response = await updateItem(selectedItem.id, formData);
+      if (response.success) {
+        setIsModalOpen(false);
+        setErrorState(initialState);
+      } else {
+        setErrorState({
+          message: response.message,
+          errors: response.errors,
+        });
+      }
     }
-    setIsModalOpen(false);
   };
 
   async function handleRemove(id: string, image: string) {
@@ -88,7 +98,17 @@ export default function ItemTable({ items }: { items: Item[] }) {
           </table>
         </div>
       </div>
-      <ItemModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} mode={modalMode} initialData={selectedItem || undefined} onSubmit={handleSubmit} />
+      <ItemModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setErrorState(initialState);
+          setIsModalOpen(false);
+        }}
+        mode={modalMode}
+        errorState={errorState}
+        initialData={selectedItem || undefined}
+        onSubmit={handleSubmit}
+      />
     </>
   );
 }
