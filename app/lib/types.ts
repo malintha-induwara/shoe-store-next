@@ -6,6 +6,22 @@ export type Customer = {
   address: string;
 };
 
+export type User ={
+  id: string;
+  email: string;
+  paddword:string
+  role: string;
+}
+
+export type UserState={
+  errors?:{
+    email?:string[];
+    password?:string[];
+    role?:string[];
+  };
+  message?:string|null;
+}
+
 export type CustomerFormData = Omit<Customer, "id">;
 
 export type Item = {
