@@ -24,6 +24,23 @@ export async function fetchFilteredItems(query: string, currentPage: number) {
   }
 }
 
+
+export async function fetchItemById(id: string) {
+  try {
+    const items = await sql<Item>`
+      SELECT id, name, image, price, size, qty, status
+      FROM items
+      WHERE id = ${id}
+    `;
+
+    return items.rows[0];
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch item.");
+  }
+}
+
+
 export async function fetchItemPages(query: string) {
   try {
     const count = await sql`

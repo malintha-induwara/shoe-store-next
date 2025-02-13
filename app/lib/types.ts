@@ -40,3 +40,16 @@ export type ItemState = {
   };
   message?: string | null;
 };
+
+export type OrderItem = {
+  item: Item;
+  quantity: number; 
+};
+
+export type OrderState = {
+  errors?: {
+    customerId?: string[];
+    orderItems?: string[];
+  };
+  message?: string | null;
+};
