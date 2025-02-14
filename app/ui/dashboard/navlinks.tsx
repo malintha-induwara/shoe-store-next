@@ -20,7 +20,7 @@ const navItems = [
   { icon: UserCircle, label: "Users", path: "/dashboard/user" },
   { icon: Users, label: "Staff", path: "/dashboard/staff" },
   { icon: Package, label: "Orders", path: "/dashboard/order" },
-  { icon: Layers, label: "Transactions", path: "/dashboard/transactions" },
+  { icon: Layers, label: "Transactions", path: "/dashboard/transaction" },
   { icon: ClipboardCheck, label: "Attendance", path: "/dashboard/attendance" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },
 ];

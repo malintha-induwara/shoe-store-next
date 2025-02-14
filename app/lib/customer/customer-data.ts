@@ -18,7 +18,6 @@ export async function fetchFilteredCustomers(query: string, currentPage: number)
       ORDER BY name ASC
       LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
     `;
-
     return customers.rows;
   } catch (error) {
     console.error("Database Error:", error);
