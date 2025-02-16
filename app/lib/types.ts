@@ -69,3 +69,37 @@ export type OrderState = {
   };
   message?: string | null;
 };
+
+
+export type Transaction = {
+  order_id: string;
+  customer_name: string;
+  total_amount: string;
+  order_date: string;
+  item_name: string;
+  quantity: string;
+  price: string;
+  total_price: string;
+};
+
+
+export type FilterdTransaction={
+  order_id: string;
+  customer_name: string;
+  total_amount: string;
+  order_date: string;
+  items: {
+      item_name: string;
+      quantity: string;
+      price: string;
+      total_price: string;
+  }[];
+}
+
+
+export type FilterdTransactionItem={
+  item_name: string;
+  quantity: string;
+  price: string;
+  total_price: string;
+}
