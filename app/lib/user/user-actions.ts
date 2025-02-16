@@ -1,6 +1,7 @@
 "use server";
 
 import { sql } from "@vercel/postgres";
+import { error } from "console";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -69,6 +70,45 @@ export async function updateUser(id: string, formData: FormData) {
     return { message: "Database Error: Failed to Update User." };
   }
 }
+
+export async function updateUserPassword(id: string,oldPassword:string, newPassword: string) {
+  try {
+    const isMatch = sql` SELECT * FROM users WHERE id = ${id} AND password = ${oldPassword}`
+    if(!isMatch){
+      return {
+        message: "Password is incorrect." };
+    }
+
+    await sql`
+      UPDATE users
+      SET password = ${newPassword}
+      WHERE id = ${id};
+    `;
+    return { success: true };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { message: "Database Error: Failed to Update Password." };
+  }
+}
+
+export async function deleteUserWithPassword(id: string, password: string) {
+  try {
+    const isMatch = sql` SELECT * FROM users WHERE id = ${id} AND password = ${password}`
+    if(!isMatch){
+      return {
+        message: "Password is incorrect." };
+    }
+    await sql`
+      DELETE FROM users
+      WHERE id = ${id};
+    `;
+    return { success: true };
+  } catch (error) {
+    console.error("Database Error:", error);
+    return { message: "Database Error: Failed to Delete User." };
+  }
+}
+
 
 export async function deleteUser(id: string) {
   try {
