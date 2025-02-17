@@ -1,9 +1,10 @@
 "use server";
 
 import { sql } from "@vercel/postgres";
-import { error } from "console";
 import { revalidatePath } from "next/cache";
+import bcrypt from 'bcrypt';
 import { z } from "zod";
+import { User } from "../types";
 
 const userSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -22,7 +23,6 @@ function validateUserFields(formData: FormData) {
 }
 
 export async function createUser(formData: FormData) {
-    console.log(formData)
   const validatedFields = validateUserFields(formData);
 
   if (!validatedFields.success) {
@@ -31,12 +31,13 @@ export async function createUser(formData: FormData) {
       message: "Missing Fields. Failed to Create User.",
     };
   }
-
   try {
     const { email, password, role } = validatedFields.data;
+    const encryptedPassword = await bcrypt.hash(password, 1);
+
     await sql`
       INSERT INTO users (email, password, role)
-      VALUES (${email}, ${password}, ${role});
+      VALUES (${email}, ${encryptedPassword}, ${role});
     `;
     revalidatePath("/dashboard/user");
     return { success: true };
@@ -58,9 +59,10 @@ export async function updateUser(id: string, formData: FormData) {
 
   try {
     const { email, password, role } = validatedFields.data;
+    const encryptedPassword = await bcrypt.hash(password, 1);
     await sql`
       UPDATE users
-      SET email = ${email}, password = ${password}, role = ${role}
+      SET email = ${email}, password = ${encryptedPassword}, role = ${role}
       WHERE id = ${id};
     `;
     revalidatePath("/dashboard/user");
@@ -73,15 +75,16 @@ export async function updateUser(id: string, formData: FormData) {
 
 export async function updateUserPassword(id: string,oldPassword:string, newPassword: string) {
   try {
-    const isMatch = sql` SELECT * FROM users WHERE id = ${id} AND password = ${oldPassword}`
+    const user = await sql<User>`SELECT * FROM users WHERE id = ${id}`;
+    const isMatch = await bcrypt.compare(oldPassword, user.rows[0].password);
     if(!isMatch){
       return {
         message: "Password is incorrect." };
     }
-
+    const encryptedPassword = await bcrypt.hash(newPassword, 1);
     await sql`
       UPDATE users
-      SET password = ${newPassword}
+      SET password = ${encryptedPassword}
       WHERE id = ${id};
     `;
     return { success: true };
@@ -93,7 +96,8 @@ export async function updateUserPassword(id: string,oldPassword:string, newPassw
 
 export async function deleteUserWithPassword(id: string, password: string) {
   try {
-    const isMatch = sql` SELECT * FROM users WHERE id = ${id} AND password = ${password}`
+    const user = await sql<User>`SELECT * FROM users WHERE id = ${id}`;
+    const isMatch = await bcrypt.compare(password, user.rows[0].password);
     if(!isMatch){
       return {
         message: "Password is incorrect." };
@@ -108,7 +112,6 @@ export async function deleteUserWithPassword(id: string, password: string) {
     return { message: "Database Error: Failed to Delete User." };
   }
 }
-
 
 export async function deleteUser(id: string) {
   try {

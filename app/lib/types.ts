@@ -9,7 +9,7 @@ export type Customer = {
 export type User ={
   id: string;
   email: string;
-  paddword:string
+  password:string
   role: string;
 }
 
@@ -102,4 +102,13 @@ export type FilterdTransactionItem={
   quantity: string;
   price: string;
   total_price: string;
+}
+
+export type CreateUserState={
+  errors?:{
+    email?:string[];
+    password?:string[];
+    retypePassword?:string[];
+  };
+  message?:string|null;
 }
