@@ -1,7 +1,17 @@
-import { Lock, Mail } from "lucide-react";
+"use client";
+
+import { CircleAlert, Lock, Mail } from "lucide-react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useActionState } from "react";
+import { authenticate } from "../lib/auth/action";
+import Link from "next/link";
 
 export default function Login() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
+
   return (
     <div className="min-h-screen flex flex-col-reverse md:flex-row">
       <div className="w-full md:w-1/2 flex flex-col justify-center px-4 md:px-16 bg-white py-8 md:py-0">
@@ -12,7 +22,7 @@ export default function Login() {
             <p className="mt-2 text-sm text-gray-600">Please sign in to your account</p>
           </div>
 
-          <form className="space-y-4 md:space-y-6">
+          <form action={formAction} className="space-y-4 md:space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">Email</label>
               <div className="mt-1 relative">
@@ -20,6 +30,7 @@ export default function Login() {
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  name="email"
                   type="email"
                   className="pl-10 block w-full rounded-lg border border-gray-300 py-2.5 md:py-3 px-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your email"
@@ -35,6 +46,7 @@ export default function Login() {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
+                  name="password"
                   type="password"
                   className="pl-10 block w-full rounded-lg border border-gray-300 py-2.5 md:py-3 px-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your password"
@@ -49,18 +61,26 @@ export default function Login() {
               </a>
             </div>
 
+            <input type="hidden" name="redirectTo" value={callbackUrl} />
             <button
               type="submit"
               className="w-full flex justify-center py-2.5 md:py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              aria-disabled={isPending}
             >
               Sign in
             </button>
+            <div className="flex h-8 items-end space-x-1" aria-live="polite" aria-atomic="true">
+              {errorMessage && (
+                <>
+                  <CircleAlert className="h-5 w-5 text-red-500" />
+                  <p className="text-sm text-red-500">{errorMessage}</p>
+                </>
+              )}
+            </div>
 
             <p className="mt-4 text-center text-sm text-gray-600">
               Dont have an account?
-              <a href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-                Sign up
-              </a>
+              <Link className="font-medium text-blue-600 hover:text-blue-500 ml-1" href="/signup"> Sign in</Link>
             </p>
           </form>
         </div>
