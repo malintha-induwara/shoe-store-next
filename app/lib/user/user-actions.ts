@@ -2,7 +2,7 @@
 
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import { z } from "zod";
 import { User } from "../types";
 
@@ -73,19 +73,35 @@ export async function updateUser(id: string, formData: FormData) {
   }
 }
 
-export async function updateUserPassword(id: string,oldPassword:string, newPassword: string) {
+export async function updateUserPassword(formData: FormData) {
+  const validatedFields= z.object({
+    email: z.string().email("Invalid email format"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+  }).safeParse({ email: formData.get("email"), password: formData.get("password"), newPassword: formData.get("newPassword") });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Update User.",
+    };
+  }
+
   try {
-    const user = await sql<User>`SELECT * FROM users WHERE id = ${id}`;
-    const isMatch = await bcrypt.compare(oldPassword, user.rows[0].password);
-    if(!isMatch){
+    const { email, password, newPassword } = validatedFields.data;
+    const user = await sql<User>`SELECT * FROM users WHERE email = ${email}`;
+    const isMatch = await bcrypt.compare(password, user.rows[0].password);
+    if (!isMatch) {
       return {
-        message: "Password is incorrect." };
+        errors: { password: ["Password is incorrect."] },
+        message: "Password is incorrect.",
+      };
     }
     const encryptedPassword = await bcrypt.hash(newPassword, 1);
     await sql`
       UPDATE users
       SET password = ${encryptedPassword}
-      WHERE id = ${id};
+      WHERE email = ${email};
     `;
     return { success: true };
   } catch (error) {
@@ -94,17 +110,18 @@ export async function updateUserPassword(id: string,oldPassword:string, newPassw
   }
 }
 
-export async function deleteUserWithPassword(id: string, password: string) {
+export async function deleteUserWithPassword(email: string, password: string) {
   try {
-    const user = await sql<User>`SELECT * FROM users WHERE id = ${id}`;
+    const user = await sql<User>`SELECT * FROM users WHERE email = ${email}`;
     const isMatch = await bcrypt.compare(password, user.rows[0].password);
-    if(!isMatch){
+    if (!isMatch) {
       return {
-        message: "Password is incorrect." };
+        message: "Password is incorrect.",
+      };
     }
     await sql`
       DELETE FROM users
-      WHERE id = ${id};
+      WHERE email = ${email};
     `;
     return { success: true };
   } catch (error) {

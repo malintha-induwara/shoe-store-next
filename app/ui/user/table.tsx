@@ -70,6 +70,7 @@ export default function UserTable({ users }: { users: User[] }) {
                       user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
                       user.role === 'manager' ? 'bg-blue-100 text-blue-800' :
                       user.role === 'sales' ? 'bg-green-100 text-green-800' :
+                      user.role === 'inventory' ? 'bg-orange-100 text-yellow-800' :
                       'bg-orange-100 text-orange-800'
                     }`}>
                       {user.role.toUpperCase()}

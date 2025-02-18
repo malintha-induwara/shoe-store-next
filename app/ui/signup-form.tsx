@@ -18,10 +18,10 @@ export default function SignUp() {
 
     const formData = new FormData(formRef.current);
 
-    if (formData.get("password") !== formData.get("retypePassword")) {
+    if (formData.get("password") !== formData.get("confirmPassword")) {
       setErrorState({
         message: "Passwords do not match",
-        errors: {  retypePassword: ["Passwords do not match"] },
+        errors: { confirmPassword: ["Passwords do not match"] },
       });
       return;
     }
@@ -93,13 +93,13 @@ export default function SignUp() {
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  name="retypePassword"
+                  name="confirmPassword"
                   type="password"
                   className="pl-10 block w-full rounded-lg border border-gray-300 py-3 px-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Retype password"
                 />
               </div>
-              {errorState?.errors?.retypePassword && <p className="mt-1 text-sm text-red-600">{errorState.errors.retypePassword[0]}</p>}
+              {errorState?.errors?.confirmPassword && <p className="mt-1 text-sm text-red-600">{errorState.errors.confirmPassword[0]}</p>}
             </div>
 
             <button
@@ -112,7 +112,9 @@ export default function SignUp() {
 
             <p className="mt-4 text-center text-sm text-gray-600">
               Already have an account?
-              <Link className="font-medium text-blue-600 hover:text-blue-500 ml-1" href="/"> Sign in</Link>
+              <Link className="font-medium text-blue-600 hover:text-blue-500 ml-1" href="/">
+                Sign in
+              </Link>
             </p>
           </form>
         </div>

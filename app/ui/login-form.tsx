@@ -80,7 +80,7 @@ export default function Login() {
 
             <p className="mt-4 text-center text-sm text-gray-600">
               Dont have an account?
-              <Link className="font-medium text-blue-600 hover:text-blue-500 ml-1" href="/signup"> Sign in</Link>
+              <Link className="font-medium text-blue-600 hover:text-blue-500 ml-1" href="/signup"> Sign up</Link>
             </p>
           </form>
         </div>
