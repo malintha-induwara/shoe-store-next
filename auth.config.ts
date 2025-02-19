@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from 'next-auth';
+import { fetchUserById } from './app/lib/user/user-data';
  
 export const authConfig = {
   pages: {
@@ -16,6 +17,28 @@ export const authConfig = {
       }
       return true;
     },
+    async session({ token, session }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+
+      if (token.role && session.user) {
+        session.user.role = token.role as string;
+      }
+      if (session.user) {
+        session.user.email = token.email!;
+      }
+
+      return session;
+    },
+    async jwt({ token }) {
+      if (!token.sub) return token;
+      const existingUser = await fetchUserById(token.sub);
+      if (!existingUser) return token;
+      token.email = existingUser.email;
+      token.role = existingUser.role;
+      return token;
+    }
   },
   providers: [],
 } satisfies NextAuthConfig;

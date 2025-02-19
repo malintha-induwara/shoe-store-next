@@ -41,3 +41,19 @@ export async function fetchUserPages(query: string) {
     throw new Error("Failed to fetch total number of users.");
   }
 }
+
+
+export async function fetchUserById(id: string) {
+  try {
+    const user = await sql<User>`
+      SELECT id, email, role
+      FROM users
+      WHERE id=${id}
+    `;
+
+    return user.rows[0];
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch user.");
+  }
+}

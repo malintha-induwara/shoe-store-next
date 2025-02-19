@@ -6,21 +6,21 @@ export type Customer = {
   address: string;
 };
 
-export type User ={
+export type User = {
   id: string;
   email: string;
-  password:string
+  password: string;
   role: string;
-}
+};
 
-export type UserState={
-  errors?:{
-    email?:string[];
-    password?:string[];
-    role?:string[];
+export type UserState = {
+  errors?: {
+    email?: string[];
+    password?: string[];
+    role?: string[];
   };
-  message?:string|null;
-}
+  message?: string | null;
+};
 
 export type CustomerFormData = Omit<Customer, "id">;
 
@@ -59,7 +59,7 @@ export type ItemState = {
 
 export type OrderItem = {
   item: Item;
-  quantity: number; 
+  quantity: number;
 };
 
 export type OrderState = {
@@ -69,7 +69,6 @@ export type OrderState = {
   };
   message?: string | null;
 };
-
 
 export type Transaction = {
   order_id: string;
@@ -82,33 +81,45 @@ export type Transaction = {
   total_price: string;
 };
 
-
-export type FilterdTransaction={
+export type FilterdTransaction = {
   order_id: string;
   customer_name: string;
   total_amount: string;
   order_date: string;
   items: {
-      item_name: string;
-      quantity: string;
-      price: string;
-      total_price: string;
+    item_name: string;
+    quantity: string;
+    price: string;
+    total_price: string;
   }[];
-}
+};
 
-
-export type FilterdTransactionItem={
+export type FilterdTransactionItem = {
   item_name: string;
   quantity: string;
   price: string;
   total_price: string;
-}
+};
 
-export type CreateUserState={
-  errors?:{
-    email?:string[];
-    password?:string[];
-    retypePassword?:string[];
+export type CreateUserState = {
+  errors?: {
+    email?: string[];
+    password?: string[];
+    confirmPassword?: string[];
   };
-  message?:string|null;
+  message?: string | null;
+};
+
+declare module "next-auth" {
+  interface User {
+    role: string;
+  }
+
+  interface Session {
+    user: {
+      role: string ;
+      email: string;
+      name: string ;
+    };
+  }
 }
