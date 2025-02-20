@@ -2,9 +2,14 @@ import Link from "next/link";
 import NavLinks from "./navlinks";
 import Image from "next/image";
 import { LogOut } from "lucide-react";
-import { signOut } from '@/auth';
+import { auth, signOut } from '@/auth';
 
-export default function SideNav() {
+export default async function SideNav() {
+
+    const session = await auth();
+    const user = session?.user;
+
+    
 
   async function handleLogout() {
     'use server';
@@ -20,7 +25,7 @@ export default function SideNav() {
       </div>
 
       <div className="flex grow flex-col justify-between p-4">
-        <NavLinks />
+        <NavLinks role={user?.role} />
         <form action={handleLogout}>
           <button className="w-full flex items-center p-3 rounded-lg bg-red-50 hover:bg-red-100 transition-colors cursor-pointer">
           <LogOut className="h-5 w-5 text-red-600" />
