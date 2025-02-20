@@ -1,32 +1,18 @@
-'use client'
+"use client";
 import { UserX } from "lucide-react";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import DeleteConfirmModal from "./delete-modal";
+import { deleteUserWithPassword } from "@/app/lib/user/user-actions";
+import { DeleteUserState } from "@/app/lib/types";
 
-export default function DeleteAccount() {
+export default function DeleteAccount({ email }: { email: string | undefined }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [deletePassword, setDeletePassword] = useState("");
-  const initialDeleteState = { message: null };
-  const [deleteError, setDeleteError] = useState<{ message: string | null }>(initialDeleteState);
+  const initialState: DeleteUserState = { message: null, errors: {} };
+  const [deleteError, formAction] = useActionState(deleteUserWithPassword, initialState);
 
   const handleCloseDialog = () => {
     setShowDeleteDialog(false);
-    setDeletePassword("");
-    setDeleteError(initialDeleteState);
   };
-
-  const handleDeleteAccount = () => {
-    if (!deletePassword) {
-      setDeleteError({
-        message: "Password is required to delete account",
-      });
-      return;
-    }
-
-    setDeleteError(initialDeleteState);
-    setShowDeleteDialog(false);
-  };
-
   return (
     <>
       <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -37,14 +23,7 @@ export default function DeleteAccount() {
           Delete Account
         </button>
       </div>
-      <DeleteConfirmModal
-        showDeleteDialog={showDeleteDialog}
-        deleteError={deleteError.message}
-        deletePassword={deletePassword}
-        handleCloseDialog={handleCloseDialog}
-        handleDeleteAccount={handleDeleteAccount}
-        setDeletePassword={setDeletePassword}
-      />
+      <DeleteConfirmModal email={email || ""} showDeleteDialog={showDeleteDialog} deleteError={deleteError || initialState} handleCloseDialog={handleCloseDialog} handleDeleteAccount={formAction} />
     </>
   );
 }

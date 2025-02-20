@@ -110,6 +110,13 @@ export type CreateUserState = {
   message?: string | null;
 };
 
+export type DeleteUserState = {
+  errors?: {
+    password?: string[];
+    email?: string[];  
+  };
+  message?: string | null;
+};
 declare module "next-auth" {
   interface User {
     role: string;

@@ -4,7 +4,8 @@ import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
 import { z } from "zod";
-import { User } from "../types";
+import { DeleteUserState, User } from "../types";
+import { signOut } from "@/auth";
 
 const userSchema = z.object({
   email: z.string().email("Invalid email format"),
@@ -74,11 +75,13 @@ export async function updateUser(id: string, formData: FormData) {
 }
 
 export async function updateUserPassword(formData: FormData) {
-  const validatedFields= z.object({
-    email: z.string().email("Invalid email format"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-  }).safeParse({ email: formData.get("email"), password: formData.get("password"), newPassword: formData.get("newPassword") });
+  const validatedFields = z
+    .object({
+      email: z.string().email("Invalid email format"),
+      password: z.string().min(6, "Password must be at least 6 characters"),
+      newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    })
+    .safeParse({ email: formData.get("email"), password: formData.get("password"), newPassword: formData.get("newPassword") });
 
   if (!validatedFields.success) {
     return {
@@ -110,7 +113,24 @@ export async function updateUserPassword(formData: FormData) {
   }
 }
 
-export async function deleteUserWithPassword(email: string, password: string) {
+export async function deleteUserWithPassword(previousState: DeleteUserState |  undefined, formData: FormData) {
+  const deleteUserSchema = z.object({
+    email: z.string().email("Invalid email format"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+  });
+
+  const validatedFields = deleteUserSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fields. Failed to Delete User.",
+    };
+  }
+  const { email, password } = validatedFields.data;
   try {
     const user = await sql<User>`SELECT * FROM users WHERE email = ${email}`;
     const isMatch = await bcrypt.compare(password, user.rows[0].password);
@@ -123,11 +143,11 @@ export async function deleteUserWithPassword(email: string, password: string) {
       DELETE FROM users
       WHERE email = ${email};
     `;
-    return { success: true };
   } catch (error) {
     console.error("Database Error:", error);
     return { message: "Database Error: Failed to Delete User." };
   }
+  await signOut({ redirectTo: "/" });
 }
 
 export async function deleteUser(id: string) {
