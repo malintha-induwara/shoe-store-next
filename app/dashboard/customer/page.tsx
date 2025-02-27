@@ -1,4 +1,3 @@
-// app/dashboard/customer/page.tsx
 import { Suspense } from "react";
 import { fetchCustomerPages, fetchFilteredCustomers } from "@/app/lib/customer/customer-data";
 import CustomerTable from "@/app/ui/customers/table";
