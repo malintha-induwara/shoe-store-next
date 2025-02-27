@@ -30,24 +30,6 @@ CREATE TABLE users (
     role VARCHAR(100) NOT NULL
 );
 
--- Attendance Table
-CREATE TABLE attendance (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    date DATE NOT NULL,
-    created_by UUID NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
-);
-
--- Attendance_Staff Pivot Table (Many-to-Many relationship)
-CREATE TABLE attendance_staff (
-    attendance_id UUID NOT NULL,
-    staff_id UUID NOT NULL,
-    PRIMARY KEY (attendance_id, staff_id),
-    FOREIGN KEY (attendance_id) REFERENCES attendance(id) ON DELETE CASCADE,
-    FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE
-);
-
 -- Items Table
 CREATE TABLE items (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
