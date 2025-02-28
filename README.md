@@ -106,8 +106,6 @@ A comprehensive **Shoe Store Management System** designed to streamline the oper
 
 [![Zod](https://img.shields.io/badge/Zod-black?style=for-the-badge&logo=zod&logoColor=3E67B1)](https://github.com/colinhacks/zod)
 
-[![Prisma](https://img.shields.io/badge/Prisma-black?style=for-the-badge&logo=prisma&logoColor=2D3748)](https://www.prisma.io/)
-
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-black?style=for-the-badge&logo=postgresql&logoColor=4169E1)](https://www.postgresql.org/)
 
 [![Recharts](https://img.shields.io/badge/Recharts-black?style=for-the-badge&logo=recharts&logoColor=FF7300)](https://recharts.org/)
