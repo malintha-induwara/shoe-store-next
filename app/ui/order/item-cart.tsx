@@ -22,14 +22,12 @@ export default function ItemCart() {
     const formData = new FormData();
     formData.append("customerId", customer.id);
     formData.append("orderItems", JSON.stringify(cart.map((cartItem) => ({ itemId: cartItem.item.id, quantity: cartItem.quantity }))));
-    console.log(formData)
     const response = await createOrder(formData);
     if (response.success) {
       setErrorState(initialState);
       setCustomer(null);
       clearCart();
     } else {
-      console.log(response)
       setErrorState({
         message: response.message,
         errors: response.errors,
@@ -39,12 +37,28 @@ export default function ItemCart() {
 
   return (
     <div className={`w-full lg:w-96 bg-white rounded-xl shadow-lg p-4 `}>
+      {errorState.message && <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">{errorState.message}</div>}
+
       <CustomerSelect selected={customer} onSelect={setCustomer} />
+      {errorState?.errors?.customerId && errorState.errors.customerId.length > 0 && (
+        <div className="mt-1 text-sm text-red-600">
+          {errorState.errors.customerId.map((error, index) => (
+            <p key={index}>{error}</p>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-4 mb-6 h-[calc(100vh-275px)] overflow-y-auto">
         {cart.map((cartItem) => {
           return <ItemCartCard key={cartItem.item.id} cartItem={cartItem} updateQuantity={updateQuantity} removeFromCart={removeFromCart} />;
         })}
+        {errorState?.errors?.orderItems && errorState.errors.orderItems.length > 0 && (
+          <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {errorState.errors.orderItems.map((error, index) => (
+              <p key={index}>{error}</p>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="border-t pt-4 border-neutral-400">
